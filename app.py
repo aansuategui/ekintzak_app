@@ -28,15 +28,7 @@ if uploaded_file:
                 for act in actividades:
                     actividades_dict[act][curso].append(alumno)
 
-    # Mostrar en pantalla
-    for actividad in sorted(actividades_dict):
-        st.header(f"🟢 {actividad}")
-        for curso in sorted(actividades_dict[actividad]):
-            st.subheader(f"📘 {curso}")
-            for alumno in sorted(actividades_dict[actividad][curso]):
-                st.write(f"- {alumno}")
-
-    # Crear documento .docx
+    # Crear documento .docx antes de mostrar en pantalla
     doc = Document()
     doc.add_heading("Ekintzen zerrenda", 0)
 
@@ -45,19 +37,27 @@ if uploaded_file:
         for curso in sorted(actividades_dict[actividad]):
             doc.add_paragraph(f"📘 {curso}", style='Heading 2')
             for alumno in sorted(actividades_dict[actividad][curso]):
-                doc.add_paragraph(f"- {alumno}", style='List Bullet')
+                doc.add_paragraph(alumno, style='List Bullet')  # <- Sin el guion
 
-    # Guardar en memoria
     docx_buffer = BytesIO()
     doc.save(docx_buffer)
     docx_buffer.seek(0)
 
-    # Descargar botón
+    # Mostrar el botón al principio
     st.download_button(
         label="⬇️ Deskargatu DOCX fitxategia",
         data=docx_buffer,
         file_name="ekintzak_lista.docx",
         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     )
+
+    # Mostrar en pantalla
+    for actividad in sorted(actividades_dict):
+        st.header(f"🟢 {actividad}")
+        for curso in sorted(actividades_dict[actividad]):
+            st.subheader(f"📘 {curso}")
+            for alumno in sorted(actividades_dict[actividad][curso]):
+                st.write(f"- {alumno}")
+
 else:
     st.info("Mesedez, igo CSV fitxategi bat hasteko.")
